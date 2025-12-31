@@ -1,0 +1,26 @@
+# --- 数据库 & Docker 忽略 ---
+pg_data/
+postgres_data/
+docker-data/
+
+# --- IDE 编辑器忽略 ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Go 语言忽略 ---
+# 编译生成的二进制文件 (Windows下是exe)
+*.exe
+*.dll
+# 也就是你的项目名
+rag_base
+
+# --- 前端忽略 (双重保险) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.DS_Store
+
+# --- 系统文件 ---
+.DS_Store
+Thumbs.db

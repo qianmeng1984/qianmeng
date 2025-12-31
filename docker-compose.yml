@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # 数据库服务
+  db:
+    image: pgvector/pgvector:pg16  # 直接使用带向量插件的官方镜像
+    container_name: rag_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: rune          # 用户名
+      POSTGRES_PASSWORD: rune_password # 密码
+      POSTGRES_DB: rag_db          # 数据库名
+    ports:
+      - "5432:5432"                # 映射端口到宿主机
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data # 数据持久化，防止重启容器数据丢失
+
+  # 这里以后可以加 Redis 等其他服务
