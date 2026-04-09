@@ -13,7 +13,7 @@ type User struct {
 	Password string `gorm:"not null"`  // 明文密码
 	Role     int    `gorm:"default:0"` // 0=普通用户, 1=管理员
 	// === 新增字段 ===
-	Nickname  string `gorm:"default:'新用户'"`                          // 显示名，可改
+	Nickname  string `gorm:"default:'新用户'"`                       // 显示名，可改
 	Avatar    string `gorm:"default:'/uploads/avatars/default.png'"` // 头像路径，可改
 	CreatedAt time.Time
 }
@@ -30,6 +30,8 @@ type Knowledge struct {
 
 	UserID   uint `gorm:"index"`         // 数据归属人
 	IsPublic bool `gorm:"default:false"` // 是否公开
+	// 📌 新增：用于接收向量检索的距离分数 (只读字段)
+	Score float32 `gorm:"->"`
 }
 
 // Conversation 会话（左侧列表显示的项）
@@ -46,6 +48,8 @@ type ChatHistory struct {
 	UserID         uint   `json:"user_id"`
 	Question       string `json:"question"`
 	Answer         string `json:"answer"`
+	// 📌 新增：存储思维链的 JSON 字符串
+	ThinkingLog string `json:"thinking_log" gorm:"type:text"`
 }
 
 // TableName 指定表名

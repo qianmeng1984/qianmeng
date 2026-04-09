@@ -25,11 +25,12 @@ func LoadConfig() *Config {
 			EmbeddingModelID string
 		}{
 			// 1. 填入你的 API Key
-			APIKey: "xxx",
+			APIKey: "0f7a2a33-ffd9-4fa2-a7a9-001ce3b51dd5",
 
 			// 2. 填入你的模型接入点 ID (ep-xxxxx)
 			// 如果控制台还没配好，暂时填 "doubao-pro-32k"
-			ChatModelID: "doubao-1-5-vision-pro-32k-250115",
+			//ChatModelID: "doubao-1-5-vision-pro-32k-250115",
+			ChatModelID: "doubao-seed-2-0-code-preview-260215",
 
 			// 3. 👈 这一行补上了！这是火山方舟的标准地址
 			BaseURL: "https://ark.cn-beijing.volces.com/api/v3/chat/completions",

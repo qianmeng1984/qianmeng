@@ -9,9 +9,9 @@ import (
 	"strings"
 )
 
-func NewRouter(svc *service.KnowledgeService, authSvc *service.AuthService) http.Handler {
+func NewRouter(svc *service.KnowledgeService, authSvc *service.AuthService, fbSvc *service.FeedbackService) http.Handler {
 	// 1. 初始化 Handler
-	handler := api.NewHandler(svc, authSvc)
+	handler := api.NewHandler(svc, authSvc, fbSvc)
 
 	mux := http.NewServeMux()
 
@@ -41,6 +41,10 @@ func NewRouter(svc *service.KnowledgeService, authSvc *service.AuthService) http
 	mux.HandleFunc(prefix+"/user/update", AuthMiddleware(handler.UpdateUserInfo)) // 修改信息
 	mux.HandleFunc(prefix+"/upload/avatar", AuthMiddleware(handler.UploadAvatar)) // 上传头像
 
+	// 用户端
+	mux.HandleFunc(prefix+"/feedback/submit", AuthMiddleware(handler.SubmitFeedback)) // 提交
+	mux.HandleFunc(prefix+"/feedback/my", AuthMiddleware(handler.GetMyFeedbacks))     // 查看我的
+
 	// 【新增】获取会话详情
 	mux.HandleFunc(prefix+"/history/messages", AuthMiddleware(handler.HistoryDetail))
 
@@ -52,10 +56,41 @@ func NewRouter(svc *service.KnowledgeService, authSvc *service.AuthService) http
 	mux.HandleFunc(prefix+"/admin/users", AuthMiddleware(handler.AdminGetUsers))
 	mux.HandleFunc(prefix+"/admin/user/delete", AuthMiddleware(handler.AdminDeleteUser))
 	mux.HandleFunc(prefix+"/admin/user/update", AuthMiddleware(handler.AdminUpdateUser))
+	mux.HandleFunc(prefix+"/admin/stats", AuthMiddleware(handler.AdminGetStats))
 
 	// 👇👇👇 【新增】会话管理接口 👇👇👇
 	mux.HandleFunc(prefix+"/history/rename", AuthMiddleware(handler.RenameConversation))
 	mux.HandleFunc(prefix+"/history/delete", AuthMiddleware(handler.DeleteConversation))
+
+	// 管理端
+	mux.HandleFunc(prefix+"/admin/feedback/list", AuthMiddleware(handler.AdminGetFeedbacks))   // 列表
+	mux.HandleFunc(prefix+"/admin/feedback/reply", AuthMiddleware(handler.AdminReplyFeedback)) // 回复
+	mux.HandleFunc(prefix+"/admin/feedback/context", AuthMiddleware(handler.AdminGetContext))
+
+	//敏感词
+	mux.HandleFunc(prefix+"/admin/sensitive/list", AuthMiddleware(handler.AdminGetSensitiveWords))
+	mux.HandleFunc(prefix+"/admin/sensitive/add", AuthMiddleware(handler.AdminAddSensitiveWord))
+	mux.HandleFunc(prefix+"/admin/sensitive/update", AuthMiddleware(handler.AdminUpdateSensitiveWord))
+	mux.HandleFunc(prefix+"/admin/sensitive/delete", AuthMiddleware(handler.AdminDeleteSensitiveWord))
+
+	// 公告栏
+	mux.HandleFunc(prefix+"/announcement/latest", AuthMiddleware(handler.GetLatestAnnouncement))
+	mux.HandleFunc(prefix+"/admin/announcement/list", AuthMiddleware(handler.AdminGetAnnouncements))
+	mux.HandleFunc(prefix+"/admin/announcement/add", AuthMiddleware(handler.AdminAddAnnouncement))
+	mux.HandleFunc(prefix+"/admin/announcement/update", AuthMiddleware(handler.AdminUpdateAnnouncement))
+	mux.HandleFunc(prefix+"/admin/announcement/delete", AuthMiddleware(handler.AdminDeleteAnnouncement))
+
+	// 快捷指令
+	mux.HandleFunc(prefix+"/admin/prompt/list", AuthMiddleware(handler.AdminGetPrompts))
+	mux.HandleFunc(prefix+"/admin/prompt/add", AuthMiddleware(handler.AdminAddPrompt))
+	mux.HandleFunc(prefix+"/admin/prompt/update", AuthMiddleware(handler.AdminUpdatePrompt))
+	mux.HandleFunc(prefix+"/admin/prompt/delete", AuthMiddleware(handler.AdminDeletePrompt))
+
+	// 知识盲区监控
+	mux.HandleFunc(prefix+"/admin/blindspot/list", AuthMiddleware(handler.AdminGetBlindSpots))
+	mux.HandleFunc(prefix+"/admin/blindspot/resolve", AuthMiddleware(handler.AdminResolveBlindSpot))
+	mux.HandleFunc(prefix+"/admin/blindspot/delete", AuthMiddleware(handler.AdminDeleteBlindSpot))
+	mux.HandleFunc(prefix+"/prompt/active", AuthMiddleware(handler.GetActivePrompts))
 	// 5. 挂载 CORS 中间件
 	return CORSMiddleware(mux)
 }
